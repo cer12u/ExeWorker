@@ -1,0 +1,34 @@
+
+TIFF	ImageWidth	100	SHORT or LONG	1
+TIFF	ImageLength	101	SHORT or LONG	1
+TIFF	BitPerSample	102	SHORT	3
+TIFF	Compression	103	SHORT	1
+TIFF	PhotometricInterpretation	106	SHORT	1
+TIFF	Orientation	112	SHORT	1
+TIFF	SamplesPerPixel	115	SHORT	1
+TIFF	PlanarConfiguration	11C	SHORT	1
+TIFF	YCbCrSubSampling	212	SHORT	2
+TIFF	YCbCrPositioning	212	SHORT	1
+TIFF	XResolution	11A	RATIONAL
+TIFF	YResolution	11B	RATIONAL	1
+TIFF	ResolutionUnit	128	SHORT	1
+
+TIFF	StripOffsets	111	SHORT or LONG	X
+TIFF	RowsPerStrip	116	SHORT or LONG	1
+TIFF	StripByteCounts	117	SHORT or LONG	X
+TIFF	JPEGInterchangeFormat	201	LONG	1
+TIFF	JPEGInterchangeFormatLength	202	LONG	1
+
+TIFF	TransferFunction	12D	SHORT	3*256
+TIFF	WhitePoint	13E	RATIONAL	2
+TIFF	PrimaryChromaticities	13F	RATIIONAL	6
+TIFF	YCbCrCoefficients	211	RATIONAL	3
+TIFF	ReferenceBlackWhite	214	RATIONAL	6
+
+TIFF	DateTime	132	ASCII	20
+TIFF	ImageDescription	10E	ASCII	Any
+TIFF	Make	10F	ASCII	Any
+TIFF	Model	110	ASCII	Any
+TIFF	Software	131	ASCII	Any
+TIFF	Artist	13B	ASCII	Any
+TIFF	Copyright	8298	ASCII	Any

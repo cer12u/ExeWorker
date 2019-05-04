@@ -397,7 +397,7 @@ namespace ExeWorker
         //}
 
 
-        public class ExifManagerDotNet
+        public class ExifManagerDotNet: IDisposable
         {
 
             private List<EXIF_TAGS> TagList = new List<EXIF_TAGS>();
@@ -438,9 +438,10 @@ namespace ExeWorker
                 }
 
 
+                System.Drawing.Bitmap bmp = null;
                 try
                 {
-                    System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(filePath);
+                    bmp = new System.Drawing.Bitmap(filePath);
 
                     System.Drawing.Imaging.PropertyItem pp;
                     if (bmp.PropertyItems.Count() < 0)
@@ -546,11 +547,15 @@ namespace ExeWorker
                                 System.IO.File.Delete(tempPath);
                         }
                     }
-                    bmp.Dispose();
                 }
                 catch
                 {
                     return (int)ErrorNumber.Unknown;
+                }
+                finally
+                {
+                    if (bmp != null)
+                        bmp.Dispose();
                 }
                 return (int)ErrorNumber.NoError;
             }
@@ -624,10 +629,11 @@ namespace ExeWorker
                     return (int)ErrorNumber.ArgumentsNull;
                 if (!System.IO.File.Exists(filePath))
                     return (int)ErrorNumber.FileNotFound;
-                
+
+                System.Drawing.Bitmap bmp = null;
                 try
                 {
-                    System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(filePath);
+                    bmp = new System.Drawing.Bitmap(filePath);
                     TagList.Clear();
                     foreach(System.Drawing.Imaging.PropertyItem pi in bmp.PropertyItems)
                     {
@@ -643,6 +649,10 @@ namespace ExeWorker
                 catch
                 {
                     return (int)ErrorNumber.Unknown;
+                }
+                finally
+                {
+                    bmp.Dispose();
                 }
                 return (int)ErrorNumber.NoError;
             }
@@ -858,7 +868,11 @@ namespace ExeWorker
                 }
                 return string.Empty;
             }
-            
+
+            public void Dispose()
+            {
+            }
+
             /// <summary>
             /// 返却のReturnCode管理用
             /// GetErrorCode()で変数名を返却するため名称に注意する
@@ -889,6 +903,8 @@ namespace ExeWorker
                 SLONG = 9,
                 SRATIONAL = 10
             }
+
+
 
             /// <summary>
             /// EXIFタグ格納用class
@@ -979,7 +995,6 @@ namespace ExeWorker
 
             ExifManagerDotNet e2 = new ExifManagerDotNet();
             e2.LoadExifFromXml("test.xml");
-
 
             //emdn.SetValue(0x112, (UInt16)2);
             //emdn.SetValue(0xA20E, Tuple.Create((UInt32)10, (UInt32)20));

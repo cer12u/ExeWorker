@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.28307.168
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExeWorker", "ExeWorker\ExeWorker.csproj", "{DF6CB80F-5F24-492C-807F-1D6A8EA76072}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OcvSharpWorker", "OcvSharpWorker\OcvSharpWorker.csproj", "{56C65181-6CAB-40BA-A0F1-297D42F8EF65}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{DF6CB80F-5F24-492C-807F-1D6A8EA76072}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DF6CB80F-5F24-492C-807F-1D6A8EA76072}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DF6CB80F-5F24-492C-807F-1D6A8EA76072}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56C65181-6CAB-40BA-A0F1-297D42F8EF65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56C65181-6CAB-40BA-A0F1-297D42F8EF65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56C65181-6CAB-40BA-A0F1-297D42F8EF65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56C65181-6CAB-40BA-A0F1-297D42F8EF65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

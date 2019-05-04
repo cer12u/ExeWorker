@@ -34,7 +34,9 @@ namespace ExeWorker
 
         }
 
-
+        /// <summary>
+        /// EXEファイルの実行管理用class
+        /// </summary>
         private class Invoker :IDisposable
         {
             public string ToolPath { get; private set; } = string.Empty;
@@ -50,6 +52,9 @@ namespace ExeWorker
             private System.Timers.Timer TimeoutTimer = new System.Timers.Timer();
             private int AllowTime = 30 * 60 * 1000;
 
+            /// <summary>
+            /// 実行状態
+            /// </summary>
             public bool HasExited
             {
                 get
@@ -60,7 +65,9 @@ namespace ExeWorker
                 }
             }
 
-
+            /// <summary>
+            /// 初期化
+            /// </summary>
             public Invoker()
             {
                 ToolPath = string.Empty;
@@ -69,6 +76,13 @@ namespace ExeWorker
                 resultLines = new List<string>();
                 resultIndex = 0;
             }
+
+            /// <summary>
+            /// 実行するEXEファイルの場所を指定する
+            /// ファイルパスが有効な場合にセットされる
+            /// </summary>
+            /// <param name="path">ファイルのパス</param>
+            /// <returns>成否</returns>
             public bool SetToolPath(string path)
             {
                 if (System.IO.File.Exists(path))
@@ -78,7 +92,10 @@ namespace ExeWorker
                 return false;
             }
 
-
+            /// <summary>
+            /// 処理を開始する
+            /// </summary>
+            /// <returns>実行開始の成否</returns>
             public bool Run()
             {
                 if (Procs != null)
@@ -157,6 +174,10 @@ namespace ExeWorker
             }
 
 
+            /// <summary>
+            /// 出力データの有無を出力する
+            /// </summary>
+            /// <returns>データがあればtruw</returns>
             public bool HasOutputData()
             {
                 if (resultIndex < resultLines.Count)
@@ -165,12 +186,24 @@ namespace ExeWorker
 
             }
 
+            /// <summary>
+            /// 出力を読み込む
+            /// 読み出しは１行ごとに行う
+            /// </summary>
+            /// <returns>取得した１行のデータ</returns>
             public string ReadOutputLine()
             {
                 if (resultLines.Count > resultIndex)
                     return resultLines[resultIndex++];
                 return string.Empty;
             }
+
+            /// <summary>
+            /// 出力を読み込む
+            /// 読み出しは１行ごとに行う
+            /// </summary>
+            /// <param name="idx">マニュアル指定した行番号</param>
+            /// <returns>取得した１行のデータ</returns>
             public string ReadOutputLine(int idx)
             {
                 if (idx < 0)
@@ -182,6 +215,9 @@ namespace ExeWorker
 
             }
 
+            /// <summary>
+            /// 終了処理
+            /// </summary>
             public void Dispose()
             {
                 if(Procs != null)
@@ -357,20 +393,20 @@ namespace ExeWorker
         //    //public bool GetEnumerator(EXIF exif)
         //    //{
         //    //}
-
-
+        
         //}
 
-        public class BinaryyTool
-        {
-
-        }
 
         public class ExifManagerDotNet
         {
+
             private List<EXIF_TAGS> TagList = new List<EXIF_TAGS>();
             
             private int JpegQuality = 100;
+            /// <summary>
+            /// 情報のデータ補正設定
+            /// </summary>
+            public bool AutoAdjust { get;  private set; } = true;
 
             /// <summary>
             /// 指定ファイルにEXIFデータを書き込む
@@ -435,11 +471,13 @@ namespace ExeWorker
                         et.data.CopyTo(pp.Value, 0);
                         if (et.type == (int)ExifType.ASCII)
                         {
-                            if (et.data[et.data.Length - 1] != '\0')
+                            if ((et.data[et.data.Length -1] != '\0') && AutoAdjust)
                             {
                                 byte[] tmpb = new byte[et.data.Length];
                                 et.data.CopyTo(tmpb, 0);
+                                pp.Value = new byte[et.data.Length + 1];
                                 tmpb.CopyTo(pp.Value, 0);
+                                pp.Value[et.data.Length] = (byte)'\0';
                             }
                         }
 
@@ -461,7 +499,7 @@ namespace ExeWorker
                                 break;
                             case ExifType.UNDEFINED:
                             case ExifType.ASCII:
-                                pp.Len = et.data.Length;
+                                pp.Len = pp.Value.Length;
                                 break;
                             default:
                                 pp.Len = 0;
@@ -515,6 +553,63 @@ namespace ExeWorker
                     return (int)ErrorNumber.Unknown;
                 }
                 return (int)ErrorNumber.NoError;
+            }
+
+            /// <summary>
+            /// EXIF情報セットをファイルに書き出す
+            /// </summary>
+            /// <param name="filePath">保存先</param>
+            /// <returns>0 or ErrorCode</returns>
+            public int SaveExifToXml(string filePath)
+            {
+                if (filePath is null)
+                    return (int)ErrorNumber.ArgumentsNull;
+
+                try
+                {
+                    if (System.IO.File.Exists(filePath))
+                        System.IO.File.Delete(filePath);
+
+                    System.Xml.Serialization.XmlSerializer xs = new System.Xml.Serialization.XmlSerializer(typeof(List<EXIF_TAGS>));
+                    using (System.IO.StreamWriter sw = new System.IO.StreamWriter(filePath, false, Encoding.UTF8))
+                        xs.Serialize(sw, TagList);
+
+
+                    return (int)ErrorNumber.NoError;
+                }
+                catch
+                {
+                    return (int)ErrorNumber.Unknown;
+                }
+            }
+
+            /// <summary>
+            /// 保存したEXIF情報セットをファイルに書き出す
+            /// </summary>
+            /// <param name="filePath"></param>
+            /// <returns>0 or ErrorCode</returns>
+            public int LoadExifFromXml(string filePath)
+            {
+                if (filePath is null)
+                    return (int)ErrorNumber.ArgumentsNull;
+                if (!System.IO.File.Exists(filePath))
+                    return (int)ErrorNumber.FileNotFound;
+
+                try
+                {
+                    TagList.Clear();
+
+                    System.Xml.Serialization.XmlSerializer xs = new System.Xml.Serialization.XmlSerializer(typeof(List<EXIF_TAGS>));
+                    using (System.IO.StreamReader sr = new System.IO.StreamReader(filePath, Encoding.UTF8))
+                        TagList = (List<EXIF_TAGS>)xs.Deserialize(sr);
+
+                    return (int)ErrorNumber.NoError;
+
+                }
+                catch
+                {
+                    return (int)ErrorNumber.Unknown;
+                }
             }
 
             /// <summary>
@@ -798,7 +893,7 @@ namespace ExeWorker
             /// <summary>
             /// EXIFタグ格納用class
             /// </summary>
-            private class EXIF_TAGS
+            public class EXIF_TAGS
             {
                 public int tag;
                 public int type;
@@ -873,28 +968,34 @@ namespace ExeWorker
         private void Button_Click_2(object sender, RoutedEventArgs e)
         {
             ExifManagerDotNet emdn = new ExifManagerDotNet();
-            //int i = emdn.GetExifByImage("../../img.jpg");
+            int i = emdn.GetExifByImage("img.jpg");
 
             //Console.WriteLine("ErrorReason: " + emdn.GetErrorCode(i));
 
             //dynamic a;
             //Console.WriteLine(emdn.TryGetTag(0x110, out a));
 
+            emdn.SaveExifToXml("test.xml");
 
-            //emdn.TrySetTag(0x112, (UInt16)2);
-            //emdn.TrySetTag(0xA20E, Tuple.Create((UInt32)10, (UInt32)20));
-            //emdn.TrySetTag(0xA434, "Lens Pattern");
+            ExifManagerDotNet e2 = new ExifManagerDotNet();
+            e2.LoadExifFromXml("test.xml");
 
 
-            //foreach (int j in emdn.GetTagEnumerator())
-            //{
-            //    dynamic b;
-            //    emdn.TryGetTag(j, out b);
-            //    Console.WriteLine("{0:X} : {1}", j, b);
-            //}
+            //emdn.SetValue(0x112, (UInt16)2);
+            //emdn.SetValue(0xA20E, Tuple.Create((UInt32)10, (UInt32)20));
+            //emdn.SetValue(0xA434, "Lens Pattern");
 
-            emdn.SetExifToImage("../../test.jpg", "t2.jpg");
             emdn.SetValue(0x10F, "TOOL", 2);
+
+
+            foreach (int j in emdn.GetTagEnumerator())
+            {
+                dynamic b;
+                emdn.TryGetValue(j, out b);
+                Console.WriteLine("{0:X} : {1}", j, b);
+            }
+
+            //emdn.SetExifToImage("../../test.jpg", "t2.jpg");
             emdn.SetExifToImage("test_br_r.jpg");
             
 

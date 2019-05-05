@@ -37,6 +37,134 @@ namespace OcvSharpWorker
 
         }
 
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            ScreenCompare sc1 = new ScreenCompare();
+
+            ScreenCompare sc2 = new ScreenCompare();
+
+
+        }
+
+        public class ScreenCompare
+        {
+            static private int ListCounter = 0;
+            private static int MaxFileSize = 30 * 1024 * 1024;
+
+
+            private class ImageInfo :IDisposable
+            {
+                public bool OnMemory { get; private set; } = true;
+                public string Descript { get; set; } = string.Empty;
+                public int id = -1;
+                public byte[] hash = new byte[] { };
+                public string FullName { get; set; } = string.Empty;
+                public byte[] data = new byte[] { };
+                public int bufferSize = 32768;
+                public System.IO.Stream DataStream { get; private set; } = null;
+
+                public string Name
+                {
+                    get
+                    {
+                        return System.IO.Path.GetFileName(FullName);
+                    }
+                }
+
+                public bool SetData(string fileName)
+                {
+                    if (DataStream != null)
+                        return false;
+                    if (string.IsNullOrEmpty(fileName))
+                        return false;
+                    if (!System.IO.File.Exists(fileName))
+                        return false;
+
+                    if(string.IsNullOrEmpty(FullName))
+                        FullName = System.IO.Path.GetFullPath(fileName);
+
+                    //System.IO.FileInfo fi = new System.IO.FileInfo(fileName);
+
+                    try
+                    {
+                        if (OnMemory)
+                        {
+                            using (System.IO.FileStream fs = new System.IO.FileStream(fileName, System.IO.FileMode.Open))
+                            {
+                                if (fs.Length > MaxFileSize)
+                                {
+                                    DataStream = new System.IO.FileStream(fileName, System.IO.FileMode.Open);
+                                    OnMemory = false;
+                                }
+                                else
+                                {
+                                    int SeekPos = 0;
+                                    data = new byte[fs.Length];
+                                    while (fs.CanRead)
+                                    {
+                                        SeekPos += fs.Read(data, SeekPos, bufferSize);
+                                    }
+                                    DataStream = new System.IO.MemoryStream(data);
+
+                                }
+
+                            }
+                        }
+                        else
+                        {
+                            DataStream = new System.IO.FileStream(fileName, System.IO.FileMode.Open);
+                        }
+
+                        System.Security.Cryptography.SHA1 sha1 = System.Security.Cryptography.SHA1.Create();
+                        hash = sha1.ComputeHash(DataStream);
+
+                        return true;
+
+                    }
+                    catch
+                    {
+                        return false;
+                    }
+
+                 
+                }
+
+                public void Dispose()
+                {
+                    if (DataStream != null)
+                        DataStream.Dispose();
+                    data = new byte[] { };
+
+                }
+            }
+
+            private List<ImageInfo> ImageStack = new List<ImageInfo>();
+
+            public int Append(string fileName, string description = null)
+            {
+                if (string.IsNullOrEmpty(fileName))
+                    return -1;
+                if (!System.IO.File.Exists(fileName))
+                    return -2;
+
+                ImageInfo ii = new ImageInfo();
+                ii.FullName = System.IO.Path.GetFullPath(fileName);
+                ii.SetData(fileName);
+
+                if (string.IsNullOrEmpty(description))
+                    ii.Descript = description;
+
+                ii.id = ListCounter++;
+
+                ImageStack.Add(ii);
+
+                return ii.id;
+
+            }
+
+
+        }
+
         public class OCVtest
         {
             //

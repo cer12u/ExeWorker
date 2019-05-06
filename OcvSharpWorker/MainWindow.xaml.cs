@@ -60,13 +60,14 @@ namespace OcvSharpWorker
             {
                 int j = sc1.Append("test.jpg");
                 sc1.Remove(j);
-
-
-
+                
             }
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public class ScreenCompare
         {
             static private int ListCounter = 0;

@@ -37,12 +37,33 @@ namespace OcvSharpWorker
 
         }
 
+        ScreenCompare sc1 = new ScreenCompare();
+
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            ScreenCompare sc1 = new ScreenCompare();
 
-            ScreenCompare sc2 = new ScreenCompare();
+            //Console.WriteLine(sc1.Append("test.png"));
+            //sc1.Append("test.png");
+            //Console.WriteLine(sc1.Append("test4.png"));
+            //Console.WriteLine(sc1.Append("test.png"));
+            //Console.WriteLine(sc1.Append("test.png"));
+            //Console.WriteLine(sc1.Append("test3.png"));
 
+            //Mat m = Mat.FromStream(sc1.GetDataStream(0), ImreadModes.Color);
+            //Cv2.ImShow("1", m);
+            //Mat m = new Mat((IntPtr))
+
+            //Console.WriteLine("Res = " + sc1.CompareFile("test2.png"));
+
+            //Console.WriteLine(sc1.Append("test2.png"));
+            foreach(int i in Enumerable.Range(0, 100))
+            {
+                int j = sc1.Append("test.jpg");
+                sc1.Remove(j);
+
+
+
+            }
 
         }
 
@@ -51,18 +72,22 @@ namespace OcvSharpWorker
             static private int ListCounter = 0;
             private static int MaxFileSize = 30 * 1024 * 1024;
 
+            public double thresh { get; set; } = 0.8;
 
             private class ImageInfo :IDisposable
             {
-                public bool OnMemory { get; private set; } = true;
-                public string Descript { get; set; } = string.Empty;
-                public int id = -1;
-                public byte[] hash = new byte[] { };
-                public string FullName { get; set; } = string.Empty;
-                public byte[] data = new byte[] { };
-                public int bufferSize = 32768;
-                public System.IO.Stream DataStream { get; private set; } = null;
 
+                public int id = -1;
+                public string FullName { get; set; } = string.Empty;
+                public string Descript { get; set; } = string.Empty;
+
+                public int bufferSize = 1024 * 1024;
+                public byte[] hash = new byte[] { };
+                public byte[] data = new byte[] { };
+                public bool OnMemory { get; private set; } = true;
+
+                public System.IO.Stream DataStream { get; private set; } = null;
+                
                 public string Name
                 {
                     get
@@ -83,7 +108,10 @@ namespace OcvSharpWorker
                     if(string.IsNullOrEmpty(FullName))
                         FullName = System.IO.Path.GetFullPath(fileName);
 
-                    //System.IO.FileInfo fi = new System.IO.FileInfo(fileName);
+                    System.IO.FileInfo fi = new System.IO.FileInfo(fileName);
+
+                    if (fi.Length > MaxFileSize)
+                        OnMemory = false;
 
                     try
                     {
@@ -91,23 +119,16 @@ namespace OcvSharpWorker
                         {
                             using (System.IO.FileStream fs = new System.IO.FileStream(fileName, System.IO.FileMode.Open))
                             {
-                                if (fs.Length > MaxFileSize)
+                                int SeekPos = 0;
+                                data = new byte[fs.Length];
+                                while (fs.CanRead)
                                 {
-                                    DataStream = new System.IO.FileStream(fileName, System.IO.FileMode.Open);
-                                    OnMemory = false;
+                                    int readSize = fs.Read(data, SeekPos, bufferSize > ((int)fs.Length - SeekPos) ? ((int)fs.Length - SeekPos) : bufferSize);
+                                    if (readSize <= 0)
+                                        break;
+                                    SeekPos += readSize;
                                 }
-                                else
-                                {
-                                    int SeekPos = 0;
-                                    data = new byte[fs.Length];
-                                    while (fs.CanRead)
-                                    {
-                                        SeekPos += fs.Read(data, SeekPos, bufferSize);
-                                    }
-                                    DataStream = new System.IO.MemoryStream(data);
-
-                                }
-
+                                DataStream = new System.IO.MemoryStream(data);
                             }
                         }
                         else
@@ -119,14 +140,11 @@ namespace OcvSharpWorker
                         hash = sha1.ComputeHash(DataStream);
 
                         return true;
-
                     }
                     catch
                     {
                         return false;
                     }
-
-                 
                 }
 
                 public void Dispose()
@@ -154,14 +172,127 @@ namespace OcvSharpWorker
                 if (string.IsNullOrEmpty(description))
                     ii.Descript = description;
 
+                int ret = CompareHash(ii);
+
+                if (ret >= 0)
+                    return ret;
+
+
                 ii.id = ListCounter++;
-
                 ImageStack.Add(ii);
-
                 return ii.id;
-
             }
 
+
+            public bool Remove(string filename)
+            {
+                string fn = System.IO.Path.GetFullPath(filename);
+                foreach(ImageInfo ii in ImageStack)
+                {
+                    if (ii.FullName.SequenceEqual(filename))
+                    {
+                        ImageStack.Remove(ii);
+                        return true;
+                    }
+                }
+                return false;
+            }
+            public bool Remove(int index)
+            {
+                foreach (ImageInfo ii in ImageStack)
+                {
+                    if (ii.id == index)
+                    {
+                        ImageStack.Remove(ii);
+                        return true;
+                    }
+                }
+                return false;
+            }
+            
+            private int CompareHash(ImageInfo imageInfo)
+            {
+                foreach (ImageInfo ii in ImageStack)
+                {
+                    if (ii.hash.SequenceEqual(imageInfo.hash))
+                        return ii.id;
+                }
+                return -1;
+            }
+
+
+            public void IndexNormalize()
+            {
+                int tp = 0;
+                foreach(ImageInfo ii in ImageStack)
+                {
+                    ii.id = tp++;
+                }
+            }
+
+            public System.IO.Stream GetDataStream(int id)
+            {
+                foreach(ImageInfo ii in ImageStack)
+                    if (ii.id == id)
+                        return ii.DataStream;
+                return null;
+            }
+
+
+
+            public int CompareFile(string fileName, bool fullScan = false)
+            {
+                ImageInfo isrc = new ImageInfo();
+                if (!isrc.SetData(fileName))
+                    return -1;
+
+                //ハッシュレベルで一致ならそのまま返却
+                if (!fullScan)
+                {
+                    int itp = CompareHash(isrc);
+                    if(itp >= 0)
+                    {
+                        isrc.Dispose();
+                        return itp;
+                    }
+                }
+
+                int idx = -1;
+                double maxVal = 0;
+                Mat src = Mat.FromStream(isrc.DataStream, ImreadModes.AnyColor);
+                
+                foreach (ImageInfo ii in ImageStack)
+                {
+                    OpenCvSharp.Mat m = OpenCvSharp.Mat.FromStream(ii.DataStream, ImreadModes.AnyColor);
+
+                    OpenCvSharp.Mat roi = m[0, src.Height > m.Height ? m.Height : src.Height, 0, src.Width > m.Width ? m.Width : src.Width];
+                    OpenCvSharp.Mat res = new Mat();
+
+                    Cv2.MatchTemplate(src, roi, res, TemplateMatchModes.CCoeffNormed);
+                    double min, max;
+                    Cv2.MinMaxLoc(res, out min, out max);
+                    
+
+                    if (maxVal < max)
+                    {
+                        idx = ii.id;
+                        maxVal = max;
+                    }
+
+                    if (!fullScan && max > thresh)
+                    {
+                        src.Dispose();
+                        return ii.id;
+                    }
+
+                    roi.Dispose();
+                    m.Dispose();
+                }
+                
+                src.Dispose();
+                isrc.Dispose();
+                return idx;
+            }
 
         }
 

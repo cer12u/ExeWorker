@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools", "Tools\Tools.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolsTests", "ToolsTests\ToolsTests.csproj", "{253B3E69-E0DF-4BCF-9F5B-9C41E6C1C33D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UItest", "UItest\UItest.csproj", "{7A6BAC88-1F35-4D16-A069-F5A504DE7E1F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{253B3E69-E0DF-4BCF-9F5B-9C41E6C1C33D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{253B3E69-E0DF-4BCF-9F5B-9C41E6C1C33D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{253B3E69-E0DF-4BCF-9F5B-9C41E6C1C33D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A6BAC88-1F35-4D16-A069-F5A504DE7E1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A6BAC88-1F35-4D16-A069-F5A504DE7E1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A6BAC88-1F35-4D16-A069-F5A504DE7E1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A6BAC88-1F35-4D16-A069-F5A504DE7E1F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

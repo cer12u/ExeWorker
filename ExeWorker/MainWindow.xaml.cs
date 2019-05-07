@@ -580,6 +580,11 @@ namespace ExeWorker
                         xs.Serialize(sw, TagList);
 
 
+                    using (System.IO.FileStream fs = new System.IO.FileStream(filePath + ".gz", System.IO.FileMode.Create))
+                    using (System.IO.Compression.GZipStream gs = new System.IO.Compression.GZipStream(fs, System.IO.Compression.CompressionMode.Compress))
+                        xs.Serialize(gs, TagList);
+
+
                     return (int)ErrorNumber.NoError;
                 }
                 catch

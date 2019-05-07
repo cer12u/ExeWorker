@@ -189,13 +189,22 @@ namespace Tools
                 using (System.IO.StreamWriter sw = new System.IO.StreamWriter(filePath, false, Encoding.UTF8))
                     xs.Serialize(sw, TagList);
 
-
-                return (int)ErrorNumber.NoError;
+                    return (int)ErrorNumber.NoError;
             }
             catch
             {
                 return (int)ErrorNumber.Unknown;
             }
+        }
+
+        private bool IsValidFile(string fileName)
+        {
+            if (string.IsNullOrEmpty(fileName))
+                return false;
+            if (!System.IO.File.Exists(fileName))
+                return false;
+
+            return true;
         }
 
         /// <summary>
@@ -481,6 +490,7 @@ namespace Tools
 
         public void Dispose()
         {
+            TagList.Clear();
         }
 
         /// <summary>

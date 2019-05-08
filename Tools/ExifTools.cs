@@ -207,6 +207,33 @@ namespace Tools
             return true;
         }
 
+        public bool IsValidDir(string pathName)
+        {
+            if (string.IsNullOrEmpty(pathName))
+                return false;
+            if (!System.IO.Directory.Exists(pathName))
+                return false;
+            return true;
+
+        }
+
+        public bool AppendNullByte(ref byte[] bytes)
+        {
+            if (bytes.Length <= 0)
+                return false;
+
+            if(bytes[bytes.Length -1] != '\0')
+            {
+                byte[] tmpb = new byte[bytes.Length];
+                bytes.CopyTo(tmpb, 0);
+                bytes = new byte[bytes.Length + 1];
+                tmpb.CopyTo(bytes, 0);
+                bytes[bytes.Length] = (byte)'\0';
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// 保存したEXIF情報セットをファイルに書き出す
         /// </summary>

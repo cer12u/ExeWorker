@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolsTests", "ToolsTests\To
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UItest", "UItest\UItest.csproj", "{7A6BAC88-1F35-4D16-A069-F5A504DE7E1F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Browser", "Browser\Browser.csproj", "{C5AF3FD3-F962-4DB5-85F2-2F33215EBB44}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleApp1", "ConsoleApp1\ConsoleApp1.csproj", "{F2B7FFBC-99FC-4785-AEE2-26845B39C67C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{7A6BAC88-1F35-4D16-A069-F5A504DE7E1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A6BAC88-1F35-4D16-A069-F5A504DE7E1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A6BAC88-1F35-4D16-A069-F5A504DE7E1F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5AF3FD3-F962-4DB5-85F2-2F33215EBB44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5AF3FD3-F962-4DB5-85F2-2F33215EBB44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5AF3FD3-F962-4DB5-85F2-2F33215EBB44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5AF3FD3-F962-4DB5-85F2-2F33215EBB44}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2B7FFBC-99FC-4785-AEE2-26845B39C67C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2B7FFBC-99FC-4785-AEE2-26845B39C67C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2B7FFBC-99FC-4785-AEE2-26845B39C67C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2B7FFBC-99FC-4785-AEE2-26845B39C67C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

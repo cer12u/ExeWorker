@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -113,6 +114,7 @@ namespace Tools
 
             Procs.OutputDataReceived += AppendLines;
             Procs.Exited += ExitedHandler;
+            Procs.BeginOutputReadLine();
             //Procs.ExitCode;
             //Procs.ErrorDataReceived;
             Procs.EnableRaisingEvents = true;
@@ -143,9 +145,10 @@ namespace Tools
 
         private void AppendLines(object sender, DataReceivedEventArgs e)
         {
-            using (System.IO.StreamReader sr = Procs.StandardOutput)
-                while (!sr.EndOfStream)
-                    resultLines.Add(sr.ReadLine());
+            resultLines.Add(e.Data);
+            //using (System.IO.StreamReader sr = Procs.StandardOutput)
+            //    while (!sr.EndOfStream)
+            //        resultLines.Add(sr.ReadLine());
         }
 
 

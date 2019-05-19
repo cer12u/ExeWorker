@@ -43,6 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Binary.cs" />
+    <Compile Include="ExifTool2.cs" />
     <Compile Include="Images.cs" />
     <Compile Include="Class1.cs" />
     <Compile Include="ExifTools.cs" />
